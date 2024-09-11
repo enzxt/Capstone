@@ -1,2 +1,2 @@
-# Capstone
-Senior Capstone
+# Senior Capstone
+Currently in proposal phase

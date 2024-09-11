@@ -1,6 +1,7 @@
 # Senior Capstone
 
-         Loading
+        - Loading -
+
      █▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 6.7%
      
 ```java

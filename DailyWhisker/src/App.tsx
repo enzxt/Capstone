@@ -1,11 +1,15 @@
-import './App.css'
+import AppBackground from './assets/AppBackground.tsx'
+import Cat from './components/Cat.tsx'
 
 function App() {
 
   return (
-    <div>
-      <p>hi!</p>
+    <>
+    <div className="min-h-screen flex justify-center items-center">
+      <AppBackground />
+      <Cat />
     </div>
+    </>
   )
 }
 

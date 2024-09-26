@@ -5,10 +5,11 @@ function App() {
 
   return (
     <>
-    <div className="min-h-screen flex justify-center items-center">
       <AppBackground />
-      <Cat />
-    </div>
+      <div className="h-screen w-screen flex justify-center items-center">
+        <Cat />
+      </div>
+
     </>
   )
 }

@@ -1,13 +1,13 @@
 export default function AppBackground() {
     return (
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1920 1080" className="absolute inset-0">
+          <svg xmlns="http://www.w3.org/2000/svg" className="absolute w-full h-full">
             <defs>
               <linearGradient id="dark-gradient-a" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#1a1a2e">
                   <animate attributeName="stop-color"
                     values="#1a1a2e;#282846;#0f0f1f;#1a1a2e;" dur="20s" repeatCount="indefinite">
-                  </animate>
-                </stop>
+                    </animate>
+                    </stop>
                 <stop offset=".5" stopColor="#0f0f1f">
                   <animate attributeName="stop-color"
                     values="#0f0f1f;#282846;#3a3a5a;#0f0f1f;" dur="20s" repeatCount="indefinite">

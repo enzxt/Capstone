@@ -2,14 +2,14 @@
 
         - Loading -
 
-     ███▒▒▒▒▒▒▒▒▒▒▒▒▒▒ 12%
+     ████▒▒▒▒▒▒▒▒▒▒▒▒▒ 15%
      
 ```java
     //Progress
-    public String progress = "Planning / Build";
+    public String progress = "Requirements";
 
     //Contributors 
-    public String contributor = "Enzo Tinard";
+    public String dev = "Enzo Tinard";
 
     //Timeline
     public String time = "Week 4";

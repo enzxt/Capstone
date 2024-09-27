@@ -8,16 +8,17 @@ import Share from '../assets/Share';
 import CatBorder from '../assets/CatBorder';
 import bow from '../assets/bows.jpg';
 
-export default function Cat() {
+const Cat = () => {
     const [link, setLink] = useState(null);
     const [name, setName] = useState(null);
     const [description, setDescription] = useState(null);
 
+    
     const getCatImage = async () => {
         try {
             const docRef = doc(firestore, "cats", "n9bN4rS41lrVGl6ycu9p");
             const docSnap = await getDoc(docRef);
-
+            
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 if (data.link) {
@@ -37,17 +38,17 @@ export default function Cat() {
             console.error("Error fetching document:", err);
         }
     };
-
+    
     useEffect(() => {
         getCatImage();
     }, []);
-
+    
     //conditional rendering (add time logic here)
-    if (0) {
+    if (1) {
         return (
             <div className="bg-red-100 text-black justify-center rounded-md py-5 px-5 relative overflow-hidden max-w-xs">
                 <div className="absolute inset-0">
-                    {/* <CatBackground /> */}
+                        {/* <CatBackground /> */}
                     <img src={bow} alt="bow" className="object-cover w-full h-full"></img> 
                 </div> 
                 <div className="relative bg-slate-700 rounded-md z-10 overflow-hidden">
@@ -73,3 +74,4 @@ export default function Cat() {
         );
     }
 }      
+export default Cat

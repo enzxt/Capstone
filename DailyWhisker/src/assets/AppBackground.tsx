@@ -1,6 +1,7 @@
 export default function AppBackground() {
     return (
-          <svg xmlns="http://www.w3.org/2000/svg" className="absolute w-full h-full">
+      <div className="fixed w-full h-full -z-10">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-screen h-screen">
             <defs>
               <linearGradient id="dark-gradient-a" gradientUnits="objectBoundingBox" x1="0" y1="0" x2="1" y2="1">
                 <stop offset="0" stopColor="#1a1a2e">
@@ -41,5 +42,6 @@ export default function AppBackground() {
             <rect fill="url(#dark-gradient-a)" width="100%" height="100%" />
             <rect fill="url(#dark-gradient-b)" width="100%" height="100%" />
           </svg>
+                  </div>
     )
 }   

@@ -6,6 +6,7 @@ import Heart from '../assets/Heart';
 import Bookmark from '../assets/Bookmark';
 import Share from '../assets/Share';
 import CatBorder from '../assets/CatBorder';
+import bow from '../assets/bows.jpg';
 
 export default function Cat() {
     const [link, setLink] = useState(null);
@@ -42,12 +43,13 @@ export default function Cat() {
     }, []);
 
     //conditional rendering (add time logic here)
-    if (1) {
+    if (0) {
         return (
             <div className="bg-red-100 text-black justify-center rounded-md py-5 px-5 relative overflow-hidden max-w-xs">
-                {/* <div className="absolute inset-0 w-full">
-                    <CatBackground />
-                </div> */}
+                <div className="absolute inset-0">
+                    {/* <CatBackground /> */}
+                    <img src={bow} alt="bow" className="object-cover w-full h-full"></img> 
+                </div> 
                 <div className="relative bg-slate-700 rounded-md z-10 overflow-hidden">
                     <div className="p-1">
                         <div className=" inset-0 z-0">

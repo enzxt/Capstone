@@ -1,68 +1,33 @@
-import { useState } from 'react'
-import AppBackground from './assets/AppBackground.tsx'
-import { SettingsIcon, CatIcon } from './assets/icons/'
+import { useState } from "react";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
+import ForgotPassword from './Pages/ForgotPassword.tsx';
+import AppBackground from "./assets/AppBackground.tsx";
+import Login from "./Pages/Login.tsx";
+import Register from "./Pages/Register.tsx";
+import Home from "./Pages/Home.tsx";
+import Bookmarks from './Pages/BookmarksPage.tsx'
+import Settings from './Pages/Settings.tsx'
 import Cat from './components/Cat.tsx'
-import SettingsOverlay from './components/SettingsOverlay.tsx';
-import Bookmark from './assets/Bookmark.tsx';
-import BookmarksPage from './components/BookmarksPage.tsx'
-
 
 function App() {
-  const [settingsOverlay, setSettingsOverlay] = useState(false);
-
-  const toggleSettings = () => {
-    if (settingsOverlay) {
-      setSettingsOverlay(false);
-    }
-    else {
-      setSettingsOverlay(true);
-    }
-  }
-
-  //this is for toggling the cat component
-  const [generateCat, setCat] = useState(false)
-
-  const toggleCat = () => {
-    setCat(prevState => !prevState);
-  };
-
-  //this is for toggling the bookmark component
-  const [bookmarks, setBookmarks] = useState(false)
-
-  const toggleBookmarks = () => {
-    setBookmarks(prevState => !prevState)
-  }
-
-
-    
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
   return (
-    <div className="w-screen h-screen" >
-        <AppBackground />
-        {settingsOverlay && <SettingsOverlay close={setSettingsOverlay}/>}
-      <div className="h-screen w-screen">
-        <button className="text-white" onClick={toggleSettings}>
-          <SettingsIcon />
-        </button>
-        <button className="text-white" onClick={toggleCat}>
-          <CatIcon />
-        </button>
-        <button className="text-white" onClick={toggleBookmarks}>
-          <div className="z-20 fixed right-20 p-5">
-            <Bookmark />
-          </div>
-        </button>
-        <div className="flex justify-center">
-          {generateCat && <Cat />}
-        </div>
-        
-        <div>
-          {bookmarks && <BookmarksPage />}
-        </div>
-      </div>
+    <Router>
+    <AppBackground />
 
-    </div>
-  )
+    <Routes>
+      <Route path="/" element={<Navigate to="/login" />} />
+      <Route path="/login" element={<Login onAuthSuccess={() => setIsAuthenticated(true)} />} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/forgot-password" element={<ForgotPassword />} />
+      <Route path="/home" element={isAuthenticated ? <Home /> : <Navigate to="/login" />} />
+      <Route path="/bookmarks" element={<Bookmarks />} />
+      <Route path="/settings" element={<Settings />} />
+      <Route path="/cat" element={<Cat />} />
+    </Routes>
+  </Router>
+);
 }
 
-export default App
+export default App;

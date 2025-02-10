@@ -11,6 +11,21 @@ import {
 } from "firebase/firestore";
 
 /**
+ * Service module for handling cat-related operations in Firestore.
+ *
+ * This module provides functions to:
+ * - Retrieve the last generated cat for a user.
+ * - Fetch a cat's details by its unique ID.
+ * - Generate a new random cat and update Firestore.
+ * - Bookmark a cat to the user's saved list.
+ * 
+ * Dependencies:
+ * - Firebase Firestore SDK for database operations.
+ * - `firestore` and `auth` instances from the database configuration.
+ */
+
+
+/**
  * Fetches the last generated cat for the user.
  */
 export const getLastGeneratedCat = async (uid: string) => {
@@ -78,7 +93,6 @@ export const generateNewCat = async (uid: string) => {
 
     const timestamp = Timestamp.now().toMillis();
 
-    // Update user's last generated cat
     const userRef = doc(firestore, "users", uid);
     await updateDoc(userRef, {
       lastGeneratedCatId: newCatId,

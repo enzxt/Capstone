@@ -4,6 +4,21 @@ import { SettingsIcon } from "../assets/icons/index.ts";
 import Signout from '../assets/icons/Signout.tsx';
 import { logoutUser } from "../service/firestoreService.ts";
 
+/**
+ * Home component serves as the main hub of the Daily Whisker application.
+ *
+ * This component:
+ * - Displays a background using the `AppBackground` component.
+ * - Provides navigation buttons for Bookmarks, Cat, and Settings pages.
+ * - Includes a settings icon for quick access to settings.
+ * - Implements a logout button that signs the user out and redirects them.
+ *
+ * Dependencies:
+ * - Uses `react-router-dom` for navigation.
+ * - Imports UI assets including `SettingsIcon` and `Signout` icons.
+ * - Utilizes the `logoutUser` function from Firestore service for authentication handling.
+ */
+
 function Home() {
   const navigate = useNavigate();
 
@@ -11,7 +26,6 @@ function Home() {
     <div className="relative w-screen h-screen flex flex-col items-center justify-center text-white">
       <AppBackground />
 
-      {/* Settings Icon */}
       <button
         className="absolute top-6 right-6 text-white"
         onClick={() => navigate("/settings")}
@@ -19,15 +33,12 @@ function Home() {
         <SettingsIcon />
       </button>
 
-      {/* Logout Button */}
       <button className="absolute top-11 right-14 text-white" onClick={() => logoutUser(navigate)}>
         <Signout />
       </button>
 
-      {/* Title */}
       <h1 className="text-4xl font-bold mb-8">Daily Whisker</h1>
 
-      {/* Functional Buttons */}
       <div className="flex gap-6">
         <button
           onClick={() => navigate("/bookmarks")}

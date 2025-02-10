@@ -17,6 +17,21 @@ import {
 } from "firebase/firestore";
 
 /**
+ * Service module for handling user authentication and Firestore operations.
+ *
+ * This module provides functions for:
+ * - User authentication (login, logout, registration, password reset).
+ * - User Firestore document management.
+ * - Managing bookmarked cats and last generated cat tracking.
+ * 
+ * Dependencies:
+ * - Firebase Authentication for user management.
+ * - Firebase Firestore for database operations.
+ * - `auth` and `firestore` instances from the project database configuration.
+ */
+
+
+/**
  * Handles user sign-in with email and password.
  */
 export const loginUser = async (email: string, password: string) => {
@@ -80,14 +95,13 @@ export const registerUser = async (
       const user = userCredential.user;
       console.log("User registered successfully:", user);
   
-      // Create Firestore user document
       await setDoc(doc(firestore, "users", user.uid), {
         email: user.email,
         lastGeneratedCatId: null,
         lastGeneratedTimestamp: 0,
       });
   
-      navigate("/login"); // Redirect to login after successful registration
+      navigate("/login");
       return user;
     } catch (error) {
       console.error("Error creating user:", error);
@@ -102,7 +116,7 @@ export const logoutUser = async (navigate: (path: string) => void) => {
     try {
       await signOut(auth);
       console.log("User logged out");
-      navigate("/login"); // Redirect user to login after logout
+      navigate("/login");
     } catch (error) {
       console.error("Error logging out:", error);
       throw error;

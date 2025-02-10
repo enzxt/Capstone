@@ -2,6 +2,21 @@ import { useNavigate } from 'react-router-dom';
 import HomeIcon from '../assets/icons/HomeIcon';
 import { logoutUser } from "../service/firestoreService";
 
+/**
+ * Settings component for customizing the Daily Whisker experience.
+ *
+ * This component:
+ * - Provides options to customize cat border, background, and app theme.
+ * - Allows users to import/export settings in JSON or XML format.
+ * - Includes buttons for retaking a survey and sharing the app.
+ * - Provides a logout option and a save button to persist settings.
+ * - Uses `react-router-dom` for navigation back to the home screen.
+ *
+ * Dependencies:
+ * - `useNavigate` from `react-router-dom` for page transitions.
+ * - Firestore service function `logoutUser` for user sign-out.
+ */
+
 const Settings = () => {
     const navigate = useNavigate();
 

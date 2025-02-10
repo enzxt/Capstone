@@ -7,6 +7,22 @@ import Bookmark from '../assets/icons/Bookmark';
 import Share from '../assets/icons/Share';
 import CatBorder from '../assets/CatBorder';
 import bow from '../assets/images/bows.jpg';
+// import { doc, updateDoc } from 'firebase/firestore';
+
+/**
+ * Cat component responsible for displaying the user's daily cat.
+ *
+ * This component handles:
+ * - Fetching the last generated cat for the user from Firestore.
+ * - Checking whether 24 hours have passed to determine if a new cat should be generated.
+ * - Displaying the cat's image, name, and description.
+ * - Allowing the user to bookmark the cat.
+ *
+ * Dependencies:
+ * - Uses Firestore to retrieve and update user-generated cat data.
+ * - Uses authentication to fetch the current logged-in user.
+ * - Provides UI elements for user interaction (bookmarking, sharing, and liking).
+ */
 
 const Cat = () => {
     const [link, setLink] = useState<string | null>(null);
@@ -63,6 +79,56 @@ const Cat = () => {
         setLoading(false);
     };
 
+    // const getCatImage = async () => {
+    //     if (!user) return;
+    
+    //     const userRef = doc(firestore, "users", user.uid);
+    //     const now = Date.now();
+    //     const fortyEightHoursAgo = now - (48 * 60 * 60 * 1000); // Set timestamp to 48 hours ago
+    //     const twentyFourHours = 24 * 60 * 60 * 1000;
+
+    //     try {
+    //         // Force update the timestamp in Firestore to always be outdated by 48 hours
+    //         await updateDoc(userRef, {
+    //             lastGeneratedTimestamp: fortyEightHoursAgo
+    //         });
+    //         console.log("Forced timestamp update to 48 hours ago.");
+    
+    //         // Fetch updated user data
+    //         const userData = await getLastGeneratedCat(user.uid);
+    
+    //         if (userData && userData.lastGeneratedTimestamp && now - userData.lastGeneratedTimestamp < twentyFourHours) {
+    //             console.log("Reusing last generated cat:", userData.lastGeneratedCatId);
+    //             setCatMessage("Same cat as yesterday!");
+    //             const catData = await fetchCat(userData.lastGeneratedCatId);
+    //             if (catData) {
+    //                 setCatId(userData.lastGeneratedCatId);
+    //                 setLink(catData.link);
+    //                 setName(catData.name);
+    //                 setDescription(catData.description);
+    //             }
+    //         } else {
+    //             console.log("24 hours passed or first generation. Generating new cat...");
+    //             const newCatId = await generateNewCat(user.uid);
+    //             if (newCatId) {
+    //                 const catData = await fetchCat(newCatId);
+    //                 if (catData) {
+    //                     setCatId(newCatId);
+    //                     setLink(catData.link);
+    //                     setName(catData.name);
+    //                     setDescription(catData.description);
+    //                 }
+    //                 setCatMessage("New cat generated!");
+    //             }
+    //         }
+    
+    //     } catch (error) {
+    //         console.error("Error updating timestamp:", error);
+    //     }
+    
+    //     setLoading(false);
+    // };
+    
     const handleBookmark = async () => {
         if (user && catId) {
             await bookmarkCat(user.uid, catId);

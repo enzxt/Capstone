@@ -2,6 +2,21 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../service/firestoreService";
 
+/**
+ * Register component handles user account creation for Daily Whisker.
+ *
+ * This component:
+ * - Provides an input form for email and password registration.
+ * - Calls `registerUser` from Firestore service to create a new user.
+ * - Navigates to the login page upon successful registration.
+ * - Displays an error message if registration fails.
+ * - Includes a link to navigate to the login page if the user already has an account.
+ *
+ * Dependencies:
+ * - Uses `react-router-dom` for navigation.
+ * - Utilizes `useState` to manage input fields and error messages.
+ */
+
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');

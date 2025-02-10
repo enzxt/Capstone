@@ -4,6 +4,21 @@ import { auth } from '../database/firestore';
 import { getBookmarkedCats, getCatDetails } from '../service/firestoreService';
 import HomeIcon from '../assets/icons/HomeIcon';
 
+/**
+ * Bookmarks component responsible for displaying the user's saved cats.
+ *
+ * This component handles:
+ * - Fetching bookmarked cats from Firestore.
+ * - Retrieving cat images based on stored cat IDs.
+ * - Filtering bookmarks by time frame (daily, weekly, or monthly).
+ * - Displaying the list of bookmarked cats with timestamps and images.
+ *
+ * Dependencies:
+ * - Uses Firestore to retrieve bookmarked cats and their details.
+ * - Requires authentication to fetch user-specific bookmarks.
+ * - Provides filtering options for improved user experience.
+ */
+
 const Bookmarks = () => {
     const [bookmarks, setBookmarks] = useState<{ catId: string, timestamp: number, imageUrl: string }[]>([]);
     const [filter, setFilter] = useState<'day' | 'week' | 'month'>('day');
@@ -24,12 +39,11 @@ const Bookmarks = () => {
         try {
             const bookmarkData = await getBookmarkedCats(user.uid);
 
-            // Fetch cat images from Firestore
             const bookmarkWithImages = await Promise.all(bookmarkData.map(async (bookmark) => {
                 const catData = await getCatDetails(bookmark.catId);
                 return {
                     ...bookmark,
-                    imageUrl: catData?.link || "", // Use link if available, otherwise empty string
+                    imageUrl: catData?.link || "",
                 };
             }));
 

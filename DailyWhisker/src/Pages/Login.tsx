@@ -6,6 +6,22 @@ interface LoginProps {
   onAuthSuccess: () => void;
 }
 
+/**
+ * Login component handles user authentication for Daily Whisker.
+ *
+ * This component:
+ * - Provides an input form for email and password authentication.
+ * - Calls `loginUser` from Firestore service to validate credentials.
+ * - Navigates to the home page upon successful login.
+ * - Displays an error message if authentication fails.
+ * - Offers navigation links for password reset and registration.
+ *
+ * Dependencies:
+ * - Uses `react-router-dom` for navigation and routing.
+ * - Utilizes `useState` for handling input fields and error messages.
+ * - Calls `onAuthSuccess` to signal successful authentication.
+ */
+
 const Login: React.FC<LoginProps> = ({ onAuthSuccess }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

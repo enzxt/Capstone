@@ -11,7 +11,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "firebase": "^10.13.2",
+    "firebase": "^10.14.1",
+    "firebase-tools": "^13.34.0",
+    "google-auth-library": "^9.15.1",
+    "html2canvas": "^1.4.1",
+    "jwt-decode": "^4.0.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-router-dom": "^7.1.5"
@@ -32,7 +36,9 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.13",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.5.3",
+    "ts-node": "^10.9.2",
+    "tsx": "^4.19.3",
+    "typescript": "^5.8.2",
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.1"
   }

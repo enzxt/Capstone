@@ -17,22 +17,51 @@ import {
 } from "firebase/firestore";
 
 /**
- * Service module for handling user authentication and Firestore operations.
- *
- * This module provides functions for:
- * - User authentication (login, logout, registration, password reset).
- * - User Firestore document management.
- * - Managing bookmarked cats and last generated cat tracking.
- * 
- * Dependencies:
- * - Firebase Authentication for user management.
- * - Firebase Firestore for database operations.
- * - `auth` and `firestore` instances from the project database configuration.
+ * Survey status interface for Firestore
  */
+export interface SurveyStatus {
+  skipped: boolean;
+  completed: boolean;
+  answers: Record<string, any>;
+  retaking?: boolean;
+}
 
+/**
+ * Creates a default survey doc at /users/{uid}/survey/status if it does not exist.
+ */
+export const createSurveyDocIfNotExists = async (uid: string) => {
+  const surveyRef = doc(firestore, "users", uid, "survey", "status");
+  const surveySnap = await getDoc(surveyRef);
+
+  if (!surveySnap.exists()) {
+    console.log("Creating new survey status doc...");
+    const defaultStatus: SurveyStatus = {
+      skipped: false,
+      completed: false,
+      answers: {},
+    };
+    await setDoc(surveyRef, defaultStatus);
+    console.log("Survey status created for user:", uid);
+  } else {
+    console.log("ℹ️ Survey status doc already exists for user:", uid);
+  }
+};
+
+/**
+ * Updates the user's survey status doc, merging new fields.
+ */
+export const updateSurveyStatus = async (
+  uid: string,
+  data: Partial<SurveyStatus>
+) => {
+  const surveyRef = doc(firestore, "users", uid, "survey", "status");
+  await updateDoc(surveyRef, data);
+  console.log("Survey status updated for user:", uid, data);
+};
 
 /**
  * Handles user sign-in with email and password.
+ * Creates user doc (and survey doc) if it doesn't exist, using user.uid as doc ID.
  */
 export const loginUser = async (email: string, password: string) => {
   try {
@@ -52,77 +81,100 @@ export const loginUser = async (email: string, password: string) => {
 };
 
 /**
- * Creates the users Firestore document
+ * Creates the user's Firestore document with the given ID and email if it doesn't exist.
+ * Also creates a default survey doc.
  */
-export const createUserDocIfNotExists = async (uid: string, email: string) => {
+export const createUserDocIfNotExists = async (
+  userId: string | number,
+  email?: string
+) => {
   try {
-    const userRef = doc(firestore, "users", uid);
+    const userIdStr = String(userId);
+
+    const userRef = doc(firestore, "users", userIdStr);
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-      console.log("Creating new Firestore user document...");
-      await setDoc(userRef, {
-        email: email,
+      console.log("Creating new Firestore user document for ID:", userIdStr);
+
+      const docData: {
+        email?: string | null;
+        lastGeneratedCatId: null;
+        lastGeneratedTimestamp: null;
+      } = {
         lastGeneratedCatId: null,
         lastGeneratedTimestamp: null,
-        bookmarks: [],
-      });
+      };
 
-      console.log("Firestore document created for user:", uid);
+      if (email) {
+        docData.email = email;
+      } else {
+        docData.email = null;
+      }
+
+      await setDoc(userRef, docData);
+      console.log("Firestore document created for user:", userIdStr);
     } else {
-      console.log("ℹ️ User document already exists:", uid);
+      console.log("ℹ️ User document already exists:", userIdStr);
     }
-  } catch (error) {
-    console.error("Error creating user document:", error);
+
+    await createSurveyDocIfNotExists(userIdStr);
+
+  } catch (error: any) {
+    console.error("Error creating user document:", error.message, error.code);
     throw new Error("Failed to create user document.");
   }
 };
 
+
 /**
- * Handles user registration.
+ * Handles user registration with Firebase Auth.
+ * Uses user.uid as doc ID.
  */
 export const registerUser = async (
-    email: string,
-    password: string,
-    navigate: (path: string) => void
-  ) => {
-    if (!email || !password) {
-      throw new Error("All fields are required");
-    }
-  
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-      console.log("User registered successfully:", user);
-  
-      await setDoc(doc(firestore, "users", user.uid), {
-        email: user.email,
-        lastGeneratedCatId: null,
-        lastGeneratedTimestamp: 0,
-      });
-  
-      navigate("/login");
-      return user;
-    } catch (error) {
-      console.error("Error creating user:", error);
-      throw error;
-    }
-  };
+  email: string,
+  password: string,
+  navigate: (path: string) => void
+) => {
+  if (!email || !password) {
+    throw new Error("All fields are required");
+  }
+
+  try {
+    const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    const user = userCredential.user;
+    console.log("User registered successfully:", user);
+
+    const userRef = doc(firestore, "users", user.uid);
+    await setDoc(userRef, {
+      email: user.email,
+      lastGeneratedCatId: null,
+      lastGeneratedTimestamp: 0,
+    });
+
+    await createSurveyDocIfNotExists(user.uid);
+
+    navigate("/login");
+    return user;
+  } catch (error) {
+    console.error("Error creating user:", error);
+    throw error;
+  }
+};
 
 /**
  * Logs out the current user.
  */
 export const logoutUser = async (navigate: (path: string) => void) => {
-    try {
-      await signOut(auth);
-      console.log("User logged out");
-      navigate("/login");
-    } catch (error) {
-      console.error("Error logging out:", error);
-      throw error;
-    }
-  };
-  
+  try {
+    await signOut(auth);
+    console.log("User logged out");
+    navigate("/choice");
+  } catch (error) {
+    console.error("Error logging out:", error);
+    throw error;
+  }
+};
 
 /**
  * Sends a password reset email.
@@ -138,11 +190,11 @@ export const resetPassword = async (email: string) => {
 };
 
 /**
- * Fetches the authenticated user's Firestore document.
+ * Fetches the authenticated user's Firestore document by ID.
  */
-export const getUserData = async (uid: string) => {
+export const getUserData = async (userId: string) => {
   try {
-    const userRef = doc(firestore, "users", uid);
+    const userRef = doc(firestore, "users", userId);
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -159,11 +211,11 @@ export const getUserData = async (uid: string) => {
 };
 
 /**
- * Saves the last generated cat ID and timestamp for the user.
+ * Saves the last generated cat ID and timestamp for the user at doc users/<userId>.
  */
-export const updateLastGeneratedCat = async (uid: string, catId: string) => {
+export const updateLastGeneratedCat = async (userId: string, catId: string) => {
   try {
-    const userRef = doc(firestore, "users", uid);
+    const userRef = doc(firestore, "users", userId);
     const timestamp = Timestamp.now().toMillis();
 
     await updateDoc(userRef, {
@@ -179,14 +231,11 @@ export const updateLastGeneratedCat = async (uid: string, catId: string) => {
 };
 
 /**
- * Saves a bookmarked cat in the user's bookmarks subcollection.
+ * Saves a bookmarked cat in the user's bookmarks subcollection (users/<userId>/bookmarks).
  */
-export const bookmarkCat = async (uid: string, catId: string) => {
+export const bookmarkCat = async (userId: string, catId: string) => {
   try {
-    const userBookmarksCollection = collection(
-      firestore,
-      `users/${uid}/bookmarks`
-    );
+    const userBookmarksCollection = collection(firestore, `users/${userId}/bookmarks`);
     const existingBookmarks = await getDocs(userBookmarksCollection);
     const isAlreadyBookmarked = existingBookmarks.docs.some(
       (doc) => doc.data().catId === catId
@@ -210,19 +259,17 @@ export const bookmarkCat = async (uid: string, catId: string) => {
 };
 
 /**
- * Fetches bookmarked cats from the user's Firestore subcollection.
+ * Fetches bookmarked cats from the user's Firestore subcollection (users/<userId>/bookmarks).
  */
 export const getBookmarkedCats = async (uid: string) => {
   try {
-    const userBookmarksCollection = collection(
-      firestore,
-      `users/${uid}/bookmarks`
-    );
+    const userBookmarksCollection = collection(firestore, `users/${uid}/bookmarks`);
     const querySnapshot = await getDocs(userBookmarksCollection);
 
     const bookmarks = querySnapshot.docs.map((doc) => ({
       catId: doc.data().catId,
       timestamp: doc.data().timestamp,
+      note: doc.data().note || "",
     }));
 
     console.log("Fetched bookmarked cats:", bookmarks);
@@ -233,8 +280,9 @@ export const getBookmarkedCats = async (uid: string) => {
   }
 };
 
+
 /**
- * Fetches cat id and timestamp  
+ * Fetches cat details by ID from the "cats" collection.
  */
 export const getCatDetails = async (catId: string) => {
   try {
@@ -253,3 +301,24 @@ export const getCatDetails = async (catId: string) => {
     throw error;
   }
 };
+/**
+ * Updates or creates the user's settings document in Firestore.
+ * The document is stored under "users/{userId}/settings/preferences" and is updated with merge.
+ */
+export async function updateUserSettings(userId: string, settings: any): Promise<any> {
+  const settingsRef = doc(firestore, "users", userId, "settings", "preferences");
+  await setDoc(settingsRef, settings, { merge: true });
+  
+  const updatedSettingsSnap = await getDoc(settingsRef);
+  return updatedSettingsSnap.exists() ? updatedSettingsSnap.data() : null;
+}
+
+/**
+ * Retrieves the user's settings document from Firestore.
+ * The document is located at "users/{userId}/settings/preferences".
+ */
+export async function getUserSettings(userId: string): Promise<any | null> {
+  const settingsRef = doc(firestore, "users", userId, "settings", "preferences");
+  const docSnap = await getDoc(settingsRef);
+  return docSnap.exists() ? docSnap.data() : null;
+}

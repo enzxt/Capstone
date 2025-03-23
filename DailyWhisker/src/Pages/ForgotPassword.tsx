@@ -3,19 +3,7 @@ import { resetPassword } from '../service/firestoreService';
 
 /**
  * ForgotPassword component handles the password reset process for users.
- *
- * This component:
- * - Provides an input field for users to enter their email.
- * - Calls the `resetPassword` function from the Firestore service.
- * - Displays success or error messages based on the reset attempt.
- * - Allows users to navigate back to the login page.
- *
- * Dependencies:
- * - Uses Firebase Authentication to send password reset emails.
- * - Requires Firestore service for authentication-related actions.
- * - Implements error handling for unexpected failures.
  */
-
 const ForgotPassword: React.FC = () => {
     const [email, setEmail] = useState('');
     const [message, setMessage] = useState('');

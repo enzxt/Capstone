@@ -11,26 +11,11 @@ import {
 } from "firebase/firestore";
 
 /**
- * Service module for handling cat-related operations in Firestore.
- *
- * This module provides functions to:
- * - Retrieve the last generated cat for a user.
- * - Fetch a cat's details by its unique ID.
- * - Generate a new random cat and update Firestore.
- * - Bookmark a cat to the user's saved list.
- * 
- * Dependencies:
- * - Firebase Firestore SDK for database operations.
- * - `firestore` and `auth` instances from the database configuration.
- */
-
-
-/**
  * Fetches the last generated cat for the user.
  */
-export const getLastGeneratedCat = async (uid: string) => {
+export const getLastGeneratedCat = async (uid: string | number) => {
   try {
-    const userRef = doc(firestore, "users", uid);
+    const userRef = doc(firestore, "users", String(uid));
     const userSnap = await getDoc(userRef);
 
     if (userSnap.exists()) {
@@ -76,7 +61,7 @@ export const fetchCat = async (catId: string | null) => {
 /**
  * Generates a new cat and updates Firestore.
  */
-export const generateNewCat = async (uid: string) => {
+export const generateNewCat = async (uid: string | number) => {
   try {
     console.log("Checking available cats from Firestore...");
     const catsCollection = collection(firestore, "cats");
@@ -93,13 +78,13 @@ export const generateNewCat = async (uid: string) => {
 
     const timestamp = Timestamp.now().toMillis();
 
-    const userRef = doc(firestore, "users", uid);
+    const userRef = doc(firestore, "users", String(uid));
     await updateDoc(userRef, {
       lastGeneratedCatId: newCatId,
       lastGeneratedTimestamp: timestamp,
     });
 
-    console.log("Stored last generated cat in user root:", newCatId);
+    console.log("Stored last generated cat in user doc:", newCatId);
     return newCatId;
   } catch (error) {
     console.error("Error generating new cat:", error);
@@ -108,14 +93,11 @@ export const generateNewCat = async (uid: string) => {
 };
 
 /**
- * Saves a cat to the user's bookmark subcollection.
+ * Saves a cat to the user's bookmarks subcollection.
  */
-export const bookmarkCat = async (uid: string, catId: string) => {
+export const bookmarkCat = async (uid: string | number, catId: string, note?: string) => {
   try {
-    const userBookmarksCollection = collection(
-      firestore,
-      `users/${uid}/bookmarks`
-    );
+    const userBookmarksCollection = collection(firestore, `users/${String(uid)}/bookmarks`);
     const existingBookmarks = await getDocs(userBookmarksCollection);
     const isAlreadyBookmarked = existingBookmarks.docs.some(
       (doc) => doc.data().catId === catId
@@ -128,6 +110,7 @@ export const bookmarkCat = async (uid: string, catId: string) => {
 
     await addDoc(userBookmarksCollection, {
       catId,
+      note: note || "",
       timestamp: Timestamp.now().toMillis(),
     });
 
@@ -137,3 +120,23 @@ export const bookmarkCat = async (uid: string, catId: string) => {
     throw error;
   }
 };
+
+// export async function fetchImageBlob(catApiUrl: any) {
+//   const proxyUrl = `http://localhost:4000/proxy?url=${encodeURIComponent(catApiUrl)}`;
+  
+//   const response = await fetch(proxyUrl);
+//   if (!response.ok) {
+//     throw new Error(`Proxy fetch failed: ${response.status} ${response.statusText}`);
+//   }
+//   return await response.blob();
+// }
+
+// import { ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+// import { storage } from "../database/firestore";
+
+// export async function rehostImage(blob: Blob, catId: string): Promise<string> {
+//   const fileName = `cat-${catId}.png`;
+//   const fileRef = storageRef(storage, `cats/${fileName}`);
+//   await uploadBytes(fileRef, blob);
+//   return await getDownloadURL(fileRef);
+// }

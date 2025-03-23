@@ -1,26 +1,17 @@
-import { useState } from "react";
+/**
+ * Register 
+ * 
+ * allows users to use simple login/register
+ */
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { registerUser } from "../service/firestoreService";
-
-/**
- * Register component handles user account creation for Daily Whisker.
- *
- * This component:
- * - Provides an input form for email and password registration.
- * - Calls `registerUser` from Firestore service to create a new user.
- * - Navigates to the login page upon successful registration.
- * - Displays an error message if registration fails.
- * - Includes a link to navigate to the login page if the user already has an account.
- *
- * Dependencies:
- * - Uses `react-router-dom` for navigation.
- * - Utilizes `useState` to manage input fields and error messages.
- */
 
 const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -37,6 +28,10 @@ const Register: React.FC = () => {
     }
   };
 
+  const toggleShowPassword = () => {
+    setShowPassword((prev) => !prev);
+  };
+
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="sm:w-full sm:max-w-sm">
@@ -46,37 +41,48 @@ const Register: React.FC = () => {
 
         <div>
           <form onSubmit={handleSubmit} className="space-y-4">
-            {errorMessage && <p className="text-red-500 text-sm">{errorMessage}</p>}
+            {errorMessage && (
+              <p className="text-red-500 text-sm">{errorMessage}</p>
+            )}
 
-              <label htmlFor="email" className="sr-only">
-                Email
-              </label>
-              <input
-                id="email"
-                name="email"
-                type="email"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                autoComplete="email"
-                className="block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm"
-              />
+            <label htmlFor="email" className="sr-only">
+              Email
+            </label>
+            <input
+              id="email"
+              name="email"
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              autoComplete="email"
+              className="block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm"
+            />
 
+            <div className="relative">
               <label htmlFor="password" className="sr-only">
                 Password
               </label>
               <input
                 id="password"
                 name="password"
-                type="password"
+                type={showPassword ? "text" : "password"}
                 placeholder="Password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="new-password"
-                className="block w-full rounded-md border border-gray-300 px-4 py-2 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm"
+                className="block w-full rounded-md border border-gray-300 px-4 py-2 pr-10 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-indigo-600 sm:text-sm"
               />
+              <button
+                type="button"
+                onClick={toggleShowPassword}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-600"
+              >
+                {showPassword ? "Hide" : "Show"}
+              </button>
+            </div>
 
             <div className="mt-6">
               <button
@@ -90,16 +96,16 @@ const Register: React.FC = () => {
 
           <div className="mt-6">
             <Link
-            to="/login"
-            className="flex w-full justify-center rounded-lg bg-indigo-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600"
+              to="/login"
+              className="flex w-full justify-center rounded-lg bg-indigo-300 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-600"
             >
-            Login
+              Login
             </Link>
           </div>
+        </div>
       </div>
     </div>
-    </div>
   );
-}
+};
 
 export default Register;

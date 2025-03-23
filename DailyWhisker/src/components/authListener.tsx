@@ -1,3 +1,10 @@
+/**
+ * User Firestore Document Checker and Creator
+ *
+ * Listens for authentication state changes via Firebase Auth and verifies that
+ * a corresponding user document exists in Firestore. If not, it creates a new
+ * user document with default fields.
+ */
 import { auth, firestore } from "../database/firestore";
 import { doc, getDoc, setDoc } from "@firebase/firestore";
 import { onAuthStateChanged, User } from "firebase/auth";
@@ -9,12 +16,11 @@ const checkOrCreateUser = async (user: User | null) => {
     const userSnap = await getDoc(userRef);
 
     if (!userSnap.exists()) {
-        // If the user document doesn't exist, create it
         await setDoc(userRef, {
             email: user.email,
             lastGeneratedCatId: null,
             lastGeneratedTimestamp: 0,
-            bookmarks: [], // Empty array for future bookmarks
+            bookmarks: [],
         });
 
         console.log("New Firestore user created:", user.uid);
@@ -23,7 +29,6 @@ const checkOrCreateUser = async (user: User | null) => {
     }
 };
 
-// Runs this function whenever a user logs in
 onAuthStateChanged(auth, async (user) => {
     await checkOrCreateUser(user);
 });

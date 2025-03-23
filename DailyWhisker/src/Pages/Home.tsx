@@ -1,31 +1,17 @@
 import { useNavigate } from "react-router-dom";
-import AppBackground from "../assets/AppBackground.tsx";
-import { SettingsIcon } from "../assets/icons/index.ts";
-import Signout from '../assets/icons/Signout.tsx';
-import { logoutUser } from "../service/firestoreService.ts";
+import AppBackground from "../assets/AppBackgrounds/PinkBackground";
+import SettingsIcon from "../assets/icons/SettingsIcon";
+import Signout from "../assets/icons/Signout";
+import { logoutUser } from "../service/firestoreService";
 
 /**
  * Home component serves as the main hub of the Daily Whisker application.
- *
- * This component:
- * - Displays a background using the `AppBackground` component.
- * - Provides navigation buttons for Bookmarks, Cat, and Settings pages.
- * - Includes a settings icon for quick access to settings.
- * - Implements a logout button that signs the user out and redirects them.
- *
- * Dependencies:
- * - Uses `react-router-dom` for navigation.
- * - Imports UI assets including `SettingsIcon` and `Signout` icons.
- * - Utilizes the `logoutUser` function from Firestore service for authentication handling.
  */
-
 function Home() {
   const navigate = useNavigate();
 
   return (
-    <div className="relative w-screen h-screen flex flex-col items-center justify-center text-white">
-      <AppBackground />
-
+    <div className="relative w-screen h-screen flex flex-col items-center justify-center text-white bg-gradient-to-br ">
       <button
         className="absolute top-6 right-6 text-white"
         onClick={() => navigate("/settings")}
@@ -33,13 +19,16 @@ function Home() {
         <SettingsIcon />
       </button>
 
-      <button className="absolute top-11 right-14 text-white" onClick={() => logoutUser(navigate)}>
+      <button
+        className="absolute top-11 right-14 text-white"
+        onClick={() => logoutUser(navigate)}
+      >
         <Signout />
       </button>
 
       <h1 className="text-4xl font-bold mb-8">Daily Whisker</h1>
 
-      <div className="flex gap-6">
+      <div className="flex flex-col sm:flex-row gap-6">
         <button
           onClick={() => navigate("/bookmarks")}
           className="w-32 h-32 rounded-lg bg-gray-300 bg-opacity-40 border border-gray-500 shadow-lg flex items-center justify-center text-lg font-semibold hover:scale-105 transition-transform"

@@ -2,26 +2,32 @@
 
         - Loading -
 
-     ███████▒▒▒▒▒▒▒ 48%
+     ██████████████▒ 93%
      
 ```java
-    //Progress
-    public String progress = "Requirements";
+// Progress
+public String progress = "Implementation/Testing";
 
-    //Contributors 
-    public String dev = "Enzo Tinard";
+// Contributors
+public String dev = "Enzo Tinard";
 
-    //Timeline
-    public String time = "Week 4";
+// Timeline
+public String time = "Week 12";
 ```
 # Breakdown
 ``` java
-    public class Melvin() {
+    public class Melvin {
 
-        //Front end web app using React and Tailwind
-        Product DailyWhisker;
+    // Front end web app using React and Tailwind:
+    // - Built with React to deliver a dynamic, component-based user interface.
+    // - Styled with Tailwind CSS for rapid, responsive design.
+    // - Responsible for displaying cats, user settings, and overall navigation.
+    Product DailyWhisker;
 
-        //Backend SSO service
-        Product Pawssword;
-    }
+    // Backend SSO service ("Pawssword"):
+    // - Provides secure, centralized authentication (Single Sign-On) for the application.
+    // - Integrates with external OAuth providers such as Google and GitHub.
+    // - Manages user sessions and ensures secure access to app resources.
+    Product Pawssword;
+}
 ```

@@ -31,3 +31,10 @@ public String time = "Week 12";
     Product Pawssword;
 }
 ```
+# To Do:
+
+- Document API
+- Enable cors or proxy images for sharing/downloading
+- Implement lucky cats
+- Import/export settings
+- Lock down back end with security

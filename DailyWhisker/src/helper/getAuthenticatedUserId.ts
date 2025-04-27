@@ -1,10 +1,7 @@
 /**
- * Retrieves the authenticated user's ID.
+ * Authenticated User ID Helper
  *
- * First checks Firebase Auth's currentUser for a UID. If unavailable,
- * it retrieves the auth token from localStorage, decodes it using jwtDecode,
- * and returns the user ID from the token payload if present.
- * Returns null if no valid user ID is found.
+ * Retrieves the authenticated user's ID from Firebase Auth or a decoded JWT.
  */
 import { jwtDecode } from "jwt-decode";
 import { auth } from "../database/firestore";
@@ -13,6 +10,10 @@ interface MyTokenPayload {
   id?: string | number;
 }
 
+/**
+ * Returns the authenticated user's ID from Firebase Auth or JWT.
+ * @returns User ID as a string, or null if not authenticated.
+ */
 export function getAuthenticatedUserId(): string | null {
   const firebaseUser = auth.currentUser;
   if (firebaseUser?.uid) {

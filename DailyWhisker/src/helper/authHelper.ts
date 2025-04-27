@@ -1,12 +1,11 @@
 /**
  * AuthHelper
- * 
- * Returns the authenticated user information.
- * First checks Firebase Auth's currentUser.
- * If that is null, checks localStorage for a custom JWT,
- * decodes it, and returns the user info.
- * If neither is available, returns null.
+ *
+ * Provides methods to retrieve authenticated user info.
+ *
+ * - getAuthenticatedUser: Returns the current user from Firebase Auth or a decoded JWT from localStorage.
  */
+
 import { jwtDecode } from "jwt-decode";
 import { auth } from "../database/firestore";
 
@@ -16,6 +15,10 @@ export interface MyTokenPayload {
   name?: string;
 }
 
+/**
+ * Returns authenticated user details from Firebase Auth or a decoded JWT.
+ * @returns MyTokenPayload object if authenticated, otherwise null.
+ */
 export const getAuthenticatedUser = (): MyTokenPayload | null => {
   if (auth.currentUser) {
     return {

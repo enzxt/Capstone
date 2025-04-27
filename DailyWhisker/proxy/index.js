@@ -1,8 +1,15 @@
 /**
- * Sets up an Express server that provides a proxy endpoint for fetching external resources
- * and returns them with CORS headers to the client.
+ * Proxy Server
+ *
+ * Sets up an Express server that proxies external requests.
+ * Accepts a URL via query parameters, fetches the resource, and returns it with proper CORS headers.
  * 
- * In testing
+ * Functions:
+ * - Initializes Express and applies CORS middleware.
+ * - Handles GET requests to `/proxy` for fetching and relaying external resources.
+ * - Returns the fetched resource with the original Content-Type header preserved.
+ *
+ * In Testing
  */
 const express = require("express");
 const fetch = require("node-fetch");

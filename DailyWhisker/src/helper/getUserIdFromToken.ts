@@ -1,9 +1,7 @@
 /**
- * getUserIdFromToken
+ * Token ID Helper
  *
- * The getUserIdFromToken function retrieves the "authToken" from localStorage,
- * decodes it using jwtDecode, and returns the user's id as a string if present.
- * It returns null if the token is missing or if decoding fails.
+ * Retrieves the user's ID from a stored authentication token in localStorage.
  */
 import { jwtDecode } from "jwt-decode";
 
@@ -13,6 +11,9 @@ export interface MyTokenPayload {
   name?: string;
 }
 
+/**
+ * Returns the user ID from a decoded JWT token, or null if unavailable.
+ */
 export const getUserIdFromToken = (): string | null => {
   const token = localStorage.getItem("authToken");
   if (!token) return null;

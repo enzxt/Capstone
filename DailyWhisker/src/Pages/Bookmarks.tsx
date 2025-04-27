@@ -1,9 +1,9 @@
 /**
  * Bookmarks Component
  *
- * This component displays the authenticated user's bookmarked cats. It fetches the user's bookmark documents 
- * from Firestore, retrieves additional details for each bookmarked cat (such as image URLs), and allows the 
- * user to filter bookmarks by day, week, or month.
+ * Displays the authenticated user's bookmarked cats.
+ * Fetches bookmark data from Firestore and allows filtering by day, week, or month.
+ * Allows users to click a bookmark to view the full cat card.
  */
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
@@ -34,6 +34,9 @@ const Bookmarks = () => {
     }
   }, [userId]);
 
+  /**
+   * Fetches the user's bookmarked cats from Firestore and loads cat images.
+   */
   const fetchBookmarks = async () => {
     if (!userId) return;
     try {
@@ -55,6 +58,9 @@ const Bookmarks = () => {
     }
   };
 
+  /**
+   * Filters bookmarks based on the selected time frame.
+   */
   const filterBookmarks = () => {
     const now = new Date();
     return bookmarks.filter((bookmark) => {
@@ -70,6 +76,10 @@ const Bookmarks = () => {
     });
   };
 
+   /**
+   * Navigates the user to a full view of the bookmarked cat.
+   * @param catId - ID of the cat to view
+   */
   const handleBookmarkClick = (catId: string) => {
     navigate(`/bookmarked-cat/${catId}`);
   };

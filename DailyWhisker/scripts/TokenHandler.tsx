@@ -1,10 +1,15 @@
 /**
  * TokenHandler Component
  *
- * This component extracts an authentication token from the URL query parameters,
- * decodes it to retrieve user information, stores the token in localStorage, ensures
- * that the corresponding user document exists in Firestore, invokes the onAuthSuccess
- * callback, and finally navigates the user to the Home page.
+ * Handles authentication tokens after OAuth login.
+ * Extracts the token from URL parameters, decodes it to retrieve user information,
+ * saves the token to localStorage, ensures a Firestore user document exists,
+ * triggers the authentication success callback, and redirects the user to the Home page.
+ *
+ * Functions:
+ * - Reads and processes the JWT token from the URL.
+ * - Ensures user presence in Firestore using user ID.
+ * - Redirects users to the Home page after processing.
  */
 import React, { useEffect } from "react";
 import { useLocation, useNavigate } from "react-router-dom";

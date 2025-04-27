@@ -11,7 +11,7 @@ interface PWLoginProps {
   onAuthSuccess?: () => void;
 }
 
-const PWLogin: React.FC<PWLoginProps> = ({ onAuthSuccess })=> {
+const PWLogin: React.FC<PWLoginProps> = ({ })=> {
   const navigate = useNavigate();
 
   const handleGoogleLogin = () => {
@@ -24,7 +24,7 @@ const PWLogin: React.FC<PWLoginProps> = ({ onAuthSuccess })=> {
 
   return (
     <div className="flex min-h-screen flex-1 flex-col justify-center items-center px-6 py-12 lg:px-8">
-      <h2 className="text-4xl font-bold text-white mb-8">Pawssword</h2>
+      <h2 className="text-4xl font-bold text-white mb-8">Pawssword - Beta, Local Only</h2>
 
       <div className="flex flex-col space-y-4 w-48">
         <button

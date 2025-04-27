@@ -21,7 +21,7 @@ import Register from "./Pages/Register";
 import Home from "./Pages/Home";
 import Bookmarks from "./Pages/Bookmarks";
 import Settings from "./Pages/Settings";
-import Cat from "./components/Cat";
+import Cat from "./Pages/Cat";
 import PWLogin from "./Pages/Pawssword/PWLogin";
 import LoginChoice from "./Pages/LoginChoice";
 import PWAbout from "./Pages/Pawssword/PWAbout";

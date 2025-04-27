@@ -1,9 +1,8 @@
 /**
  * Layout Component
  *
- * Wraps the application content with a conditional background.
- * It receives the user's preferred background style and the current location,
- * and then renders the appropriate background component before displaying the children.
+ * Renders the app's background based on user preference and route,
+ * and displays the provided child components above it.
  */
 import React from "react";
 import { useLocation } from "react-router-dom";

@@ -1,9 +1,9 @@
 /**
- * User Firestore Document Checker and Creator
+ * Auth Listener for Firestore User Creation
  *
- * Listens for authentication state changes via Firebase Auth and verifies that
- * a corresponding user document exists in Firestore. If not, it creates a new
- * user document with default fields.
+ * Monitors Firebase Auth state and ensures each authenticated user
+ * has a corresponding document in Firestore. Creates a default user
+ * document if one does not exist.
  */
 import { auth, firestore } from "../database/firestore";
 import { doc, getDoc, setDoc } from "@firebase/firestore";
@@ -23,9 +23,9 @@ const checkOrCreateUser = async (user: User | null) => {
             bookmarks: [],
         });
 
-        console.log("New Firestore user created:", user.uid);
+        console.log("New Firestore user created");
     } else {
-        console.log("User already exists in Firestore:", user.uid);
+        console.log("User already exists in Firestore");
     }
 };
 

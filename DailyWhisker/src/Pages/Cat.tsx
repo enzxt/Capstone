@@ -1,8 +1,8 @@
 /**
  * Cat Component
  *
- * This component retrieves user customization settings, fetches a cat image (either reusing the last generated one or generating a new one),
- * displays the cat along with its name and description, and provides actions for bookmarking, sharing, and downloading the cat card.
+ * Displays the daily cat with user customization, allows bookmarking, sharing, and downloading.
+ * Handles special cats and prompts users to bookmark them if enabled.
  */
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -41,6 +41,14 @@ const Cat = () => {
   const navigate = useNavigate();
   const cardRef = useRef<HTMLDivElement | null>(null);
 
+  const [isSpecialCat, setIsSpecialCat] = useState(false);
+  const [autoBookmarkSpecials, setAutoBookmarkSpecials] = useState(false);
+  const [showSpecialBookmarkPrompt, setShowSpecialBookmarkPrompt] = useState(false);
+  const [settingsLoaded, setSettingsLoaded] = useState(false);
+
+  /**
+   * Loads user settings such as background, border style, and auto-bookmark preference.
+   */
   useEffect(() => {
     const loadCustomization = async () => {
       const userId = getAuthenticatedUserId();
@@ -63,8 +71,12 @@ const Cat = () => {
       if (settings && settings.catBorder) {
         setUserCatBorder(settings.catBorder.toLowerCase());
       }
+      if (settings && settings.autoBookmarkSpecials) {
+        setAutoBookmarkSpecials(settings.autoBookmarkSpecials);
+      }
     };
     loadCustomization();
+    setSettingsLoaded(true);
   }, []);
 
   const textColor = catBgType === "fancy" ? "text-white" : "text-black";
@@ -77,59 +89,127 @@ const Cat = () => {
       return;
     }
     console.log("Authenticated user found:", user);
-    getCatImage(user);
-  }, []);
+    // getCatImage(user);
+    getCatImage();
 
-  const getCatImage = async (user: MyTokenPayload) => {
-    const userData = await getLastGeneratedCat(user.id!);
-    const now = Date.now();
-    const fiveMinutes = 5 * 60 * 1000;
+  }, [settingsLoaded]);
 
-    if (
-      userData &&
-      userData.lastGeneratedTimestamp &&
-      now - userData.lastGeneratedTimestamp < fiveMinutes
-    ) {
-      const remainingTime = fiveMinutes - (now - userData.lastGeneratedTimestamp);
-      const secondsLeft = Math.ceil(remainingTime / 1000);
-      setCatMessage(`Same cat as before! Please wait ${secondsLeft} seconds for a new cat.`);
-      console.log("Reusing last generated cat:", userData.lastGeneratedCatId);
-      const catData = await fetchCat(userData.lastGeneratedCatId);
-      if (catData) {
-        setCatId(userData.lastGeneratedCatId);
-        setLink(catData.imageUrl);
-        setName(catData.name);
-        setDescription(catData.description);
-        console.log("Reusing cat:", userData.lastGeneratedCatId, catData);
-      } else {
-        console.error("No cat data found for cat id:", userData.lastGeneratedCatId);
+  //test to force special cats
+  const getCatImage = async () => {
+    const forcedCatId = "wdgHhoUF2ljB5eLskpnj";
+
+    console.log("FORCING cat ID:", forcedCatId);
+    const catData = await fetchCat(forcedCatId);
+
+    if (catData) {
+      setCatId(forcedCatId);
+      setLink(catData.imageUrl);
+      setName(catData.name);
+      setDescription(catData.description);
+      console.log("Forced special cat data:", catData);
+
+      setIsSpecialCat(catData.isSpecial === true);
+
+      if (catData.isSpecial === true) {
+        setShowSpecialBookmarkPrompt(true);
       }
     } else {
-      console.log("Generating a new cat for user:", user.id);
-      const newCatId = await generateNewCat(user.id!);
-      if (newCatId) {
-        const catData = await fetchCat(newCatId);
-        if (catData) {
-          setCatId(newCatId);
-          setLink(catData.imageUrl);
-          setName(catData.name);
-          setDescription(catData.description);
-          console.log("New cat generated:", newCatId, catData);
-        } else {
-          console.error("No cat data returned for new cat id:", newCatId);
-        }
-        setCatMessage("New cat generated!");
-      } else {
-        console.error("Failed to generate new cat ID");
-      }
+      console.error("No cat data found for forced cat id:", forcedCatId);
     }
+
     setLoading(false);
   };
 
+  /**
+   * Fetches the cat to display (forces a specific cat ID here).
+   */
+//   const getCatImage = async (user: MyTokenPayload) => {
+//   const userData = await getLastGeneratedCat(user.id!);
+//   const now = Date.now();
+//   const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+//   if (
+//     userData &&
+//     userData.lastGeneratedTimestamp &&
+//     now - userData.lastGeneratedTimestamp < twentyFourHours
+//   ) {
+//     const remainingTime = twentyFourHours - (now - userData.lastGeneratedTimestamp);
+//     const hoursLeft = Math.floor(remainingTime / (60 * 60 * 1000));
+//     const minutesLeft = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+//     setCatMessage(`Same cat as before! Please wait ${hoursLeft}h ${minutesLeft}m for a new cat.`);
+//     console.log("Reusing last generated cat:", userData.lastGeneratedCatId);
+//     const catData = await fetchCat(userData.lastGeneratedCatId);
+//     if (catData) {
+//       setCatId(userData.lastGeneratedCatId);
+//       setLink(catData.imageUrl);
+//       setName(catData.name);
+//       setDescription(catData.description);
+//       console.log("Reusing cat:", userData.lastGeneratedCatId, catData);
+
+//       setIsSpecialCat(catData.isSpecial === true);
+
+//       if (catData.isSpecial === true && autoBookmarkSpecials) {
+//         setShowSpecialBookmarkPrompt(true);
+//       }
+
+//     } else {
+//       console.error("No cat data found for cat id:", userData.lastGeneratedCatId);
+//     }
+//   } else {
+//     console.log("Generating a new cat for user:", user.id);
+//     const newCatId = await generateNewCat(user.id!);
+//     if (newCatId) {
+//       const catData = await fetchCat(newCatId);
+//       if (catData) {
+//         setCatId(newCatId);
+//         setLink(catData.imageUrl);
+//         setName(catData.name);
+//         setDescription(catData.description);
+//         console.log("New cat generated:", newCatId, catData);
+
+//         setIsSpecialCat(catData.isSpecial === true);
+
+//         if (catData.isSpecial === true && autoBookmarkSpecials) {
+//           setShowSpecialBookmarkPrompt(true);
+//         }
+
+//       } else {
+//         console.error("No cat data returned for new cat id:", newCatId);
+//       }
+//       setCatMessage("New cat generated!");
+//     } else {
+//       console.error("Failed to generate new cat ID");
+//     }
+//   }
+//   setLoading(false);
+// };
+
+  /**
+   * Handles user confirming to bookmark a special cat.
+   */
+  const handleConfirmBookmarkSpecial = () => {
+    setShowSpecialBookmarkPrompt(false);
+    setShowModal(true); // open the note modal instead
+  };
+
+  /**
+   * Handles user declining to bookmark a special cat.
+   */
+  const handleDeclineBookmarkSpecial = () => {
+    console.log("User declined to bookmark special cat.");
+    setShowSpecialBookmarkPrompt(false);
+  };
+
+  /**
+   * Opens the note input modal to bookmark a cat.
+   */
   const handleBookmark = () => {
     setShowModal(true);
   };
 
+  /**
+   * Saves a bookmark with an optional user note.
+   */
   const handleSaveNote = async () => {
     const user = getAuthenticatedUser();
     if (user && user.id && catId) {
@@ -140,11 +220,17 @@ const Cat = () => {
     }
   };
 
+  /**
+   * Cancels the note input modal.
+   */
   const handleCancelNote = () => {
     setShowModal(false);
     setNote("");
   };
 
+  /**
+   * Captures the cat card and uploads it to Firebase Storage for sharing.
+   */
   const handleShare = async () => {
     if (!cardRef.current) {
       console.error("Card reference not found.");
@@ -160,6 +246,9 @@ const Cat = () => {
     }
   };
 
+  /**
+   * Downloads the cat card image directly as a PNG file.
+   */
   const handleDownload = async () => {
     if (!cardRef.current) {
       console.error("Card reference not found.");
@@ -184,7 +273,7 @@ const Cat = () => {
       <button className="text-white absolute top-6 left-6" onClick={() => navigate("/home")}>
         <HomeIcon />
       </button>
-      
+
       <div ref={cardRef} className="relative rounded-md py-5 px-5 overflow-hidden max-w-xs">
         <div className="absolute inset-0">
           <img src={catBg} alt="Cat background" className="object-cover w-full h-full" />
@@ -197,7 +286,11 @@ const Cat = () => {
             {loading ? (
               <p className="text-center">Loading...</p>
             ) : (
-              <img src={link ?? ""} alt="Cat" className="relative z-10" />
+              <img
+                src={link ?? ""}
+                alt="Cat"
+                className={`relative z-10 ${isSpecialCat ? "border-4 border-yellow-400 shadow-lg" : ""}`}
+              />
             )}
           </div>
         </div>
@@ -223,7 +316,44 @@ const Cat = () => {
       <div className="text-white">
         {catMessage && <p className="text-center mt-4">{catMessage}</p>}
       </div>
-      
+      {isSpecialCat && (
+        <div className="relative z-10 mt-2 text-yellow-400 text-lg font-bold text-center">
+          🎉 Special Cat! 🎉
+        </div>
+      )}
+      {showSpecialBookmarkPrompt && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+            <h2 className="text-xl font-bold mb-4">🎉 Special Cat! 🎉</h2>
+            <p className="mb-4">Would you like to bookmark this special cat?</p>
+            <div className="flex justify-end gap-4">
+              <button
+                className="bg-gray-300 px-4 py-2 rounded-md"
+                onClick={handleDeclineBookmarkSpecial}
+              >
+                No
+              </button>
+              <button
+                className="bg-blue-500 text-white px-4 py-2 rounded-md"
+                onClick={handleConfirmBookmarkSpecial}
+              >
+                Yes
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+
+      {shareLink && (
+        <div className="mt-4 text-sm text-white">
+          <p>Shareable Link:</p>
+          <a href={shareLink} target="_blank" rel="noopener noreferrer" className="underline text-blue-300">
+            {shareLink}
+          </a>
+        </div>
+      )}
+
       {/* Modal for entering a note */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

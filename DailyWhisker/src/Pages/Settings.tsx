@@ -1,9 +1,9 @@
 /**
  * Settings Component
  *
- * Provides a user interface for customizing the Daily Whisker application.
- * Users can choose their preferred cat border style, cat background, and app theme.
- * The component loads existing user settings from Firestore and updates them upon saving.
+ * Allows users to customize their cat border, background, and app theme.
+ * Supports importing and exporting settings as JSON or XML.
+ * Provides options to save settings, retake the survey, or logout.
  */
 
 import React, { useState, useEffect } from "react";
@@ -16,6 +16,7 @@ import {
   getUserSettings,
 } from "../service/firestoreService";
 import { getAuthenticatedUserId } from "../helper/getAuthenticatedUserId";
+import { exportSettings, importSettings } from "../service/settingsService";
 
 interface SettingsProps {
   onSettingsSaved: (updatedSettings: any) => void;
@@ -29,6 +30,12 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
   const [catBackground, setCatBackground] = useState("Solid");
   const [appTheme, setAppTheme] = useState("Light");
 
+  const [exportFormat, setExportFormat] = useState<"json" | "xml">("json");
+  const fileInputRef = React.useRef<HTMLInputElement>(null);
+
+ /**
+  * Loads the user's saved settings from Firestore and updates local state.
+  */
   useEffect(() => {
     const loadSettings = async () => {
       if (userId) {
@@ -43,6 +50,9 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
     loadSettings();
   }, [userId]);
 
+ /**
+  * Marks the user as retaking the survey and navigates to the survey page.
+  */
   const handleRetakeSurvey = async () => {
     if (!userId) {
       console.warn("No authenticated user ID found. Cannot retake survey.");
@@ -52,6 +62,9 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
     navigate("/survey");
   };
 
+ /**
+  * Saves the user's updated settings to Firestore and navigates home.
+  */
   const handleSaveSettings = async () => {
     if (!userId) {
       console.warn("No authenticated user ID found. Cannot save settings.");
@@ -73,6 +86,27 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
       console.error("Error saving settings:", error);
       alert("Failed to save settings. Please try again.");
     }
+  };
+
+ /**
+  * Exports the current settings as a JSON or XML file.
+  */
+  const handleExport = () => {
+    const settings = { catBorder, catBackground, appTheme };
+    exportSettings(settings, exportFormat);
+  };
+
+ /**
+  * Imports settings from a selected JSON or XML file and updates local state.
+  */
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    importSettings(file, (importedSettings) => {
+      setCatBorder(importedSettings.catBorder);
+      setCatBackground(importedSettings.catBackground);
+      setAppTheme(importedSettings.appTheme);
+    });
   };
 
   return (
@@ -134,20 +168,50 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
           Import or export your settings as JSON or XML.
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4 mb-2">
-          <label className="flex items-center gap-1">
-            <input type="radio" name="format" value="json" defaultChecked className="hidden" /> JSON
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="format"
+              value="json"
+              checked={exportFormat === "json"}
+              onChange={() => setExportFormat("json")}
+            />
+            <span>JSON</span>
           </label>
-          <label className="flex items-center gap-1">
-            <input type="radio" name="format" value="xml" className="hidden" /> XML
+          <label className="flex items-center gap-2">
+            <input
+              type="radio"
+              name="format"
+              value="xml"
+              checked={exportFormat === "xml"}
+              onChange={() => setExportFormat("xml")}
+            />
+            <span>XML</span>
           </label>
         </div>
+
         <div className="flex flex-col sm:flex-row justify-center gap-4">
-          <button className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-700">
+          <button
+            className="bg-blue-500 px-4 py-2 rounded-md text-white hover:bg-blue-700"
+            onClick={() => fileInputRef.current?.click()}
+          >
             Import
           </button>
-          <button className="bg-green-500 px-4 py-2 rounded-md text-white hover:bg-green-700">
+
+          <button
+            className="bg-green-500 px-4 py-2 rounded-md text-white hover:bg-green-700"
+            onClick={handleExport}
+          >
             Export
           </button>
+          <input
+            type="file"
+            accept=".json,.xml"
+            ref={fileInputRef}
+            style={{ display: "none" }}
+            onChange={handleImport}
+          />
+
         </div>
       </div>
 
@@ -157,9 +221,6 @@ const Settings: React.FC<SettingsProps> = ({ onSettingsSaved }) => {
           onClick={handleRetakeSurvey}
         >
           Retake Survey
-        </button>
-        <button className="w-full bg-purple-500 px-6 py-2 rounded-md text-white hover:bg-purple-700">
-          Share
         </button>
       </div>
 

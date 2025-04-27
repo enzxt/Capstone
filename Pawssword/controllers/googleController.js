@@ -8,10 +8,10 @@ const CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET;
 const REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI;
 const JWT_SECRET = process.env.JWT_SECRET;
 
-console.log("Initializing OAuth2Client with:");
-console.log("CLIENT_ID:", CLIENT_ID);
-console.log("CLIENT_SECRET:", CLIENT_SECRET);
-console.log("REDIRECT_URI:", REDIRECT_URI);
+console.log("Initializing OAuth2Client");
+// console.log("CLIENT_ID:", CLIENT_ID);
+// console.log("CLIENT_SECRET:", CLIENT_SECRET);
+// console.log("REDIRECT_URI:", REDIRECT_URI);
 
 const client = new OAuth2Client(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI);
 
@@ -30,7 +30,7 @@ exports.initiateGoogleOAuth = (req, res) => {
     access_type: 'offline',
     scope: scopes,
   });
-  console.log('Redirecting to Google OAuth URL:', authUrl);
+  console.log('Redirecting to Google OAuth URL');
   res.redirect(authUrl);
 };
 
@@ -39,14 +39,14 @@ exports.initiateGoogleOAuth = (req, res) => {
  * Handle the Google OAuth callback
  */
 exports.handleGoogleCallback = async (req, res) => {
-  console.log("Received callback from Google. Query parameters:", req.query);
+  console.log("Received callback from Google");
   try {
     const code = req.query.code;
-    console.log("Authorization code received:", code);
+    console.log("Authorization code received");
 
     console.log("Exchanging code for tokens...");
     const { tokens } = await client.getToken(code);
-    console.log("Tokens received from Google:", tokens);
+    console.log("Tokens received from Google");
     client.setCredentials(tokens);
 
     console.log("Requesting user info from Google...");
@@ -54,7 +54,7 @@ exports.handleGoogleCallback = async (req, res) => {
       url: 'https://www.googleapis.com/oauth2/v2/userinfo',
     });
     const userInfo = userInfoResponse.data;
-    console.log("User info retrieved:", userInfo);
+    console.log("User info retrieved");
 
     console.log("Generating JWT...");
     const token = jwt.sign(
@@ -66,10 +66,10 @@ exports.handleGoogleCallback = async (req, res) => {
       JWT_SECRET,
       { expiresIn: '1h' }
     );
-    console.log("JWT generated:", token);
+    console.log("JWT generated");
 
     const redirectUrl = `http://localhost:5173/auth/google/callback?token=${token}`;
-    console.log("Redirecting user to front end:", redirectUrl);
+    console.log("Redirecting user to front end");
     res.redirect(redirectUrl);
   } catch (error) {
     console.error("Error during Google OAuth callback processing:", error);

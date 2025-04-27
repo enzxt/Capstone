@@ -25,6 +25,9 @@ const Survey: React.FC<SurveyProps> = ({ onAuthSuccess }) => {
     question3: "",
   });
 
+ /**
+  * Updates the selected answer for a survey question.
+  */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>, 
     question: string
@@ -35,6 +38,9 @@ const Survey: React.FC<SurveyProps> = ({ onAuthSuccess }) => {
     }));
   };
 
+ /**
+  * Saves the user's survey responses to Firestore and navigates to the home page.
+  */
   const handleSave = async () => {
     const userId = getAuthenticatedUserId();
     if (!userId) {
@@ -54,6 +60,9 @@ const Survey: React.FC<SurveyProps> = ({ onAuthSuccess }) => {
     }
   };
 
+ /**
+  * Skips the survey and navigates directly to the home page.
+  */
   const handleSkip = () => {
     navigate("/home");
   };

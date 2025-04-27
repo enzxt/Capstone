@@ -1,11 +1,10 @@
 /**
  * BookmarkedCat Component
  *
- * This component displays a bookmarked cat based on the cat ID obtained from the URL parameters.
- * It fetches the cat's details from Firestore and loads the user's customization settings for the cat background
- * and border from Firestore using the authenticated user's ID.
+ * Displays a bookmarked cat using its ID from the URL parameters.
+ * Loads the user's custom background and border settings.
+ * Allows the user to share the cat card.
  */
-
 import React, { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { getCatDetails, getUserSettings } from "../service/firestoreService";
@@ -38,6 +37,14 @@ const BookmarkedCat: React.FC = () => {
   const [userCatBorder, setUserCatBorder] = useState<string>("dark");
 
   useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.debug("catBgType:", catBgType);
+  }, [catBgType]);
+  
+  /**
+   * Loads user settings for cat background and border.
+   */
+  useEffect(() => {
     const loadCustomization = async () => {
       const userId = getAuthenticatedUserId();
       if (!userId) return;
@@ -69,6 +76,10 @@ const BookmarkedCat: React.FC = () => {
     }
   }, [catId]);
 
+  /**
+   * Fetches cat details from Firestore based on cat ID.
+   * @param id - Cat document ID
+   */
   const fetchCat = async (id: string) => {
     try {
       const catData = await getCatDetails(id);
@@ -84,6 +95,9 @@ const BookmarkedCat: React.FC = () => {
     }
   };
 
+  /**
+   * Captures the cat card and uploads it to storage for sharing.
+   */
   const handleShare = async () => {
     if (!cardRef.current) {
       console.error("Card reference not found.");

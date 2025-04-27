@@ -1,5 +1,4 @@
 import { useNavigate } from "react-router-dom";
-import AppBackground from "../assets/AppBackgrounds/PinkBackground";
 import SettingsIcon from "../assets/icons/SettingsIcon";
 import Signout from "../assets/icons/Signout";
 import { logoutUser } from "../service/firestoreService";

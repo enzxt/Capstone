@@ -40,14 +40,14 @@ const TokenHandler: React.FC<TokenHandlerProps> = ({ onAuthSuccess }) => {
 
       try {
         const decoded = jwtDecode<MyTokenPayload>(token);
-        console.log("Decoded token:", decoded);
+        console.log("Decoded token");
 
         if (decoded.id) {
-          console.log("Creating/Checking Firestore doc by user ID:", decoded.id);
+          console.log("Creating/Checking Firestore doc by user ID");
           console.log("Type of createUserDocIfNotExists:", typeof createUserDocIfNotExists);
           createUserDocIfNotExists(decoded.id, decoded.email ?? "")
             .then(() => {
-              console.log("Firestore doc ensured for ID:", decoded.id);
+              console.log("Firestore doc ensured for ID");
             })
             .catch((err) => {
               console.error("Error ensuring user doc:", err);
